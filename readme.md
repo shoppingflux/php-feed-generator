@@ -74,9 +74,6 @@ Once the feed instance is properly configured, you must provide at least one `ma
 <?php
 namespace ShoppingFeed\Feed;
 
-$items[0] = ['sku' => 1, 'title' => 'Product 1', 'price' => 5.99, 'quantity' => 3];
-$items[1] = ['sku' => 2, 'title' => 'Product 2', 'price' => 12.99, 'quantity' => 6];
-
 $feed = (new ProductFeed)->setPlatform('Magento', '2.2.1');
 
 # Mappers are responsible to convert your data format to hydrated product
@@ -87,6 +84,10 @@ $feed->addMapper(function(array $item, Product\Product $product) {
         ->setPrice($item['price'])
         ->setQuantity($item['quantity']);
 });
+
+# Data set fixtures
+$items[0] = ['sku' => 1, 'title' => 'Product 1', 'price' => 5.99, 'quantity' => 3];
+$items[1] = ['sku' => 2, 'title' => 'Product 2', 'price' => 12.99, 'quantity' => 6];
 
 # now generates the feed with $items collection
 $feed->write($items);
