@@ -234,4 +234,16 @@ Generating large XML feed can be a very long process, so our advices in this are
 - Paginate your results on large dataset, this will limit memory consumption and network traffic per request
 
 Internally, the library uses `XmlReader` / `XmlWriter` to limit memory consumption. Product objects and generated XML are flushed from memory after each iteration.
-This guaranty that memory usage will not increase with the number of products to write, but only depends on the "size" of each products.   
+This guaranty that memory usage will not increase with the number of products to write, but only depends on the "size" of each products.
+
+
+### Execute test command
+
+The script will generates random products
+
+```bash
+php tests/functional/simple.php <file> <number-of-products>
+
+# example:
+php tests/functional/simple.php feed.xml 1000
+```   
