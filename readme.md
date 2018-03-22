@@ -150,6 +150,29 @@ Expected return value is a boolean, where:
 - `TRUE`  : the item is passed to mappers
 - `FALSE` : the item is ignored
 
+
+```php
+<?php
+namespace ShoppingFeed\Feed;
+
+$feed = new ProductFeed;
+
+# Ignore all items with undefined quantity
+$feed->addFilter(function(array $item) {
+   return isset($item['quantity']);
+});
+
+# Ignore all items prices above 10
+$feed->addFilter(function(array $item) {
+   return $item['price'] <= 10;
+});
+
+# only items that match previous filters conditions are considered by mappers
+$feed->addMapper(function(array $item, Product\Product $product) {
+    // do some stuff
+});
+```
+
 ### Mappers
 
 As stated above, at least one mapper must be registered, this is where you populate the `Product` instance, which is later converted to XML by the library
@@ -198,29 +221,6 @@ $feed->addMapper(function(array $item, Product\Product $product) {
             ->setPrice($item['price'])
             ->setQuantity($item['quantity']);
     }
-});
-```
-
-
-```php
-<?php
-namespace ShoppingFeed\Feed;
-
-$feed = new ProductFeed;
-
-# Ignore all items with undefined quantity
-$feed->addFilter(function(array $item) {
-   return isset($item['quantity']);
-});
-
-# Ignore all items prices above 10
-$feed->addFilter(function(array $item) {
-   return $item['price'] <= 10;
-});
-
-# only items that match previous filters conditions are considered by mappers
-$feed->addMapper(function(array $item, Product\Product $product) {
-    // do some stuff
 });
 ```
 
