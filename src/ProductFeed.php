@@ -141,7 +141,7 @@ class ProductFeed
      * @return ProductFeedResult
      * @throws \Exception
      */
-    public function generate($iterable)
+    public function write($iterable)
     {
         if (! $iterable instanceof \Traversable && ! is_array($iterable)) {
             throw new \Exception(sprintf('cannot iterates over %s', gettype($iterable)));

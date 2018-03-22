@@ -66,7 +66,9 @@ $feed
     ->setAttribute('storeUrl', 'http://my-greate-store.com');
 ```
 
-Once the feed instance is properly configured, you must provide at least one `hydrator` and a dataset to run the feed generation against
+### Basic Example
+
+Once the feed instance is properly configured, you must provide at least one `mapper` and a dataset to run the feed generation against
 
 ```php
 <?php
@@ -87,61 +89,10 @@ $feed->addMapper(function(array $item, Product\Product $product) {
 });
 
 # now generates the feed with $items collection
-$feed->generate($items);
+$feed->write($items);
 ```
+That's all ! Put this code in a script then run it, XML should appear to your output (browser or terminal).
 
-That's all ! Put this code in a script then run ti, XML should appear to your output (browser or terminal).
-
-#### What is a Mapper ?
-
-As stated above, at least one mapper must be registered, this is where you populate the `Product` instance, which is later converted to XML by the library
-
-The `addMapper` method accept any [callable type](http://php.net/manual/en/language.types.callable.php), like functions or invokable objects.
-
-Mappers are inkoked on each iteration over the collection you provided in the `generate` method, with the following arguments
-
-- `(mixed $item, ShoppingFeed\FeedProduct\Product $product)`
-
-where:
-
-- `$item` is your data
-- `$product` is the object to populate with `$item` data
-
-Note that there is *no expected return value* from your callback
-
-#### How mapper are invoked ?
-
-You can provide any mappers as you want, they are executed in FIFO (First registered, First executed) mode.
-The ability to register more than once mapper can helps to keep your code organized as you want, and there is no particular performances hints when registering many mapper.
-
-As an example of organisation, you can register 1 mapper for product, and 1 for its variations
-
-```php
-<?php
-namespace ShoppingFeed\Feed;
-
-$feed = new ProductFeed;
-
-# Populate properties
-$feed->addMapper(function(array $item, Product\Product $product) {
-    $product
-        ->setName($item['title'])
-        ->setReference($item['sku'])
-        ->setPrice($item['price'])
-        ->setQuantity($item['quantity']);
-});
-
-# Populate product's variations. Product properties are already populated by the previous mapper
-$feed->addMapper(function(array $item, Product\Product $product) {
-    foreach ($item['declinations'] as $item) {
-        $variation = $product->createVariation();
-        $variation
-            ->setReference($item['sku'])
-            ->setPrice($item['price'])
-            ->setQuantity($item['quantity']);
-    }
-});
-```
 
 ## Processing overview
 
@@ -198,6 +149,57 @@ Expected return value is a boolean, where:
 
 - `TRUE`  : the item is passed to mappers
 - `FALSE` : the item is ignored
+
+### Mappers
+
+As stated above, at least one mapper must be registered, this is where you populate the `Product` instance, which is later converted to XML by the library
+
+The `addMapper` method accept any [callable type](http://php.net/manual/en/language.types.callable.php), like functions or invokable objects.
+
+Mappers are inkoked on each iteration over the collection you provided in the `generate` method, with the following arguments
+
+- `(mixed $item, ShoppingFeed\FeedProduct\Product $product)`
+
+where:
+
+- `$item` is your data
+- `$product` is the object to populate with `$item` data
+
+Note that there is *no expected return value* from your callback
+
+#### How mapper are invoked ?
+
+You can provide any mappers as you want, they are executed in FIFO (First registered, First executed) mode.
+The ability to register more than once mapper can helps to keep your code organized as you want, and there is no particular performances hints when registering many mapper.
+
+As an example of organisation, you can register 1 mapper for product, and 1 for its variations
+
+```php
+<?php
+namespace ShoppingFeed\Feed;
+
+$feed = new ProductFeed;
+
+# Populate properties
+$feed->addMapper(function(array $item, Product\Product $product) {
+    $product
+        ->setName($item['title'])
+        ->setReference($item['sku'])
+        ->setPrice($item['price'])
+        ->setQuantity($item['quantity']);
+});
+
+# Populate product's variations. Product properties are already populated by the previous mapper
+$feed->addMapper(function(array $item, Product\Product $product) {
+    foreach ($item['declinations'] as $item) {
+        $variation = $product->createVariation();
+        $variation
+            ->setReference($item['sku'])
+            ->setPrice($item['price'])
+            ->setQuantity($item['quantity']);
+    }
+});
+```
 
 
 ```php

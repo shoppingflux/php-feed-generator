@@ -79,4 +79,4 @@ $generator = function($total) {
     }
 };
 
-$feed->generate($generator($argv[2] ?? 10));
+$feed->write($generator($argv[2] ?? 10));
