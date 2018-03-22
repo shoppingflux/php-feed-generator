@@ -1,0 +1,22 @@
+{
+  "name": "shoppingfeed/php-feed-generator",
+  "license": "Apache-2.0",
+  "description": "ShoppingFeed Feed manager",
+  "require": {
+    "php": ">=5.5",
+    "ext-xml": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "ShoppingFeed\\Feed\\" : "src"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "require-dev": {
+    "psr/log": "^1.0",
+    "fzaninotto/faker": "^1.7",
+    "shoppingfeed/feed-xml": "1.*"
+  }
+}
