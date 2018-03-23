@@ -15,7 +15,7 @@ This library aims to simplify compliant feed generation for Shopping-Feed servic
 
 The component act as pipeline to convert any data set to compliant XML output, to a file or any other destination.
 
-From the user point of view, it consist on mapping your data to a `ShoppingFeed\FeedProduct` object.
+From the user point of view, it consist on mapping your data to a `ShoppingFeed\Feed\Product` object.
 The library take cares of the rest : formatting data and write valid XML.
 
 
@@ -28,7 +28,7 @@ A minimal valid XML Product item requires the following properties:
 - A `price`
 - A `quantity`
 
-Your data source must contains those information, or you can hardcode some of them during feed generator.
+Your data source must contains those information, or you can hardcode some of them during feed generation.
 
 First, you should creates an instance of `ShoppingFeed\Feed\ProductFeed` and configure it according your needs
 
@@ -39,15 +39,39 @@ namespace ShoppingFeed\Feed;
 $feed = new ProductFeed();
 ```
 
-By default, XML is wrote to the standard output, but you can specify an uri, and pointing it to a file 
+### Set up URI
+
+By default, XML is wrote to the standard output, but you can specify an uri, like a local file :
 
 ```php
 <?php
-namespace ShoppingFeed\Feed;
+namespace ShoppingFeed\Feed; 
 
 $feed = new ProductFeed();
 $feed->setUri('file://my-feed.xml');
 ```
+
+### Compress output
+
+From our experience, feed upload / download is a large part on time spend during the import process on Shopping Feed side.
+
+As XML may be considered as an "heavy" format, it has a non negligible impact on network performance and cost : 
+That why we **highly recommend compression** when generation feed in production.
+
+Compression is natively supported by [PHP stream wrappers](http://php.net/manual/en/wrappers.compression.php), so the only thing you have to do is to specify the compression stream in file uri 
+(Shopping Feed only supports *gzip* compression at the moment) :
+
+```php
+<?php
+namespace ShoppingFeed\Feed;
+ 
+$feed = new ProductFeed();
+$feed->setUri('compress.zlib://my-feed.xml.gz');
+```
+
+It will reduce the final file size approximately x9 smaller
+
+### Set up information
 
 The `ProductFeed` accept some settings or useful information, like the platform or application for which the feed has been generated.
 We recommand to always specify this setting, because it can help us to debug and provide appropriate support
@@ -76,7 +100,7 @@ namespace ShoppingFeed\Feed;
 
 $feed = (new ProductFeed)->setPlatform('Magento', '2.2.1');
 
-# Mappers are responsible to convert your data format to hydrated product
+# Mappers are responsible to convert your data format to populated product
 $feed->addMapper(function(array $item, Product\Product $product) {
     $product
         ->setName($item['title'])
@@ -95,7 +119,7 @@ $feed->write($items);
 That's all ! Put this code in a script then run it, XML should appear to your output (browser or terminal).
 
 
-## Processing overview
+## Data Processing pipeline
 
 This schema describe to loop pipeline execution order
 
@@ -182,7 +206,7 @@ The `addMapper` method accept any [callable type](http://php.net/manual/en/langu
 
 Mappers are inkoked on each iteration over the collection you provided in the `generate` method, with the following arguments
 
-- `(mixed $item, ShoppingFeed\FeedProduct\Product $product)`
+- `(mixed $item, ShoppingFeed\Feed\Product\Product $product)`
 
 where:
 
@@ -230,9 +254,10 @@ $feed->addMapper(function(array $item, Product\Product $product) {
 Generating large XML feed can be a very long process, so our advices in this area are:
 
 - Run feed generation offline from a command line / cron : PHP [set max_exection_time to 0](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) in this mode
-- Try to generate feed on different machine than web-store, or when the traffic is limited : it may impact the your visitor experience by using too much resources  
+- Try to generate feed on different machine than web-store, or when the traffic is limited : it may impact the your visitor experience by blocking a thread  
 - Limit the number of SQL requests : avoid running request in the loop
 - Paginate your results on large dataset, this will limit memory consumption and network traffic per request
+- Make uses of compression when writing file : this will save network bandwidth and we will be able to import your feed faster
 
 Internally, the library uses `XmlReader` / `XmlWriter` to limit memory consumption. Product objects and generated XML are flushed from memory after each iteration.
 This guaranty that memory usage will not increase with the number of products to write, but only depends on the "size" of each products.

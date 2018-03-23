@@ -77,8 +77,7 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             $description = $product->getDescription();
             $writer->startElement('description');
             $this->writeCdataElement('full', $description->getFull());
-            $short = $description->getShort();
-            if ($short) {
+            if ($short = $description->getShort()) {
                 $this->writeCdataElement('short', $short);
             }
             $writer->endElement();

@@ -79,4 +79,9 @@ $generator = function($total) {
     }
 };
 
+if (PHP_SAPI !== 'cli') {
+    http_response_code(200);
+    header('Content-Type: application/xml');
+}
+
 $feed->write($generator($argv[2] ?? 10));
