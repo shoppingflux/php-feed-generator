@@ -168,8 +168,8 @@ class ProductGenerator
             }
 
             $product = clone $prototype;
-            foreach ($this->mappers as $hydrator) {
-                $hydrator($item, $product);
+            foreach ($this->mappers as $mapper) {
+                $mapper($item, $product);
             }
 
             $writer->writeProduct($product);
