@@ -48,7 +48,7 @@ class ProductGenerator
     /**
      * @var array
      */
-    private $writers = [
+    private static $writers = [
         'xml' => Xml\XmlProductFeedWriter::class
     ];
 
@@ -181,8 +181,7 @@ class ProductGenerator
 
         return new ProductFeedResult(
             $metadata->getStartedAt(),
-            $metadata->getFinishedAt(),
-            new \SplFileInfo($this->uri)
+            $metadata->getFinishedAt()
         );
     }
 
@@ -191,6 +190,8 @@ class ProductGenerator
      */
     private function createWriter()
     {
-        return new $this->writers[$this->writer]();
+        $writerClass = self::$writers[$this->writer];
+
+        return new $writerClass();
     }
 }
