@@ -129,11 +129,17 @@ class ProductFeedMetadata
         $this->written += 1;
     }
 
+    /**
+     * @return int
+     */
     public function getFilteredCount()
     {
         return $this->filtered;
     }
 
+    /**
+     * @return int
+     */
     public function getWrittenCount()
     {
         return $this->written;

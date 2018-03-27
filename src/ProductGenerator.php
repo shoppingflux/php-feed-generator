@@ -4,7 +4,7 @@ namespace ShoppingFeed\Feed;
 use ShoppingFeed\Feed\Product\Product;
 use ShoppingFeed\Feed\Xml;
 
-class ProductFeed
+class ProductGenerator
 {
     /**
      * File destination for the output feed
@@ -64,7 +64,7 @@ class ProductFeed
     /**
      * @param string $uri
      *
-     * @return ProductFeed
+     * @return ProductGenerator
      */
     public function setUri($uri)
     {

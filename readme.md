@@ -36,7 +36,7 @@ First, you should creates an instance of `ShoppingFeed\Feed\ProductFeed` and con
 <?php
 namespace ShoppingFeed\Feed;
 
-$feed = new ProductFeed();
+$generator = new ProductGenerator();
 ```
 
 ### Set up URI
@@ -47,8 +47,8 @@ By default, XML is wrote to the standard output, but you can specify an uri, lik
 <?php
 namespace ShoppingFeed\Feed; 
 
-$feed = new ProductFeed();
-$feed->setUri('file://my-feed.xml');
+$generator = new ProductGenerator();
+$generator->setUri('file://my-feed.xml');
 ```
 
 ### Compress output
@@ -65,11 +65,11 @@ Compression is natively supported by [PHP stream wrappers](http://php.net/manual
 <?php
 namespace ShoppingFeed\Feed;
  
-$feed = new ProductFeed();
-$feed->setUri('compress.zlib://my-feed.xml.gz');
+$generator = new ProductGenerator();
+$generator->setUri('compress.zlib://my-feed.xml.gz');
 ```
 
-It will reduce the final file size approximately x9 smaller
+It will reduce the final file size approximately x9 smaller. Zlib compression has very low footprint on processor
 
 ### Set up information
 
@@ -80,12 +80,12 @@ We recommand to always specify this setting, because it can help us to debug and
 <?php
 namespace ShoppingFeed\Feed;
 
-$feed = (new ProductFeed)
+$generator = (new ProductGenerator)
     ->setUri('file://my-feed.xml')
     ->setPlatform('Magento', '2.2.1');
 
 # Set any extra vendor attributes.
-$feed    
+$generator    
     ->setAttribute('storeName', 'my great store')
     ->setAttribute('storeUrl', 'http://my-greate-store.com');
 ```
@@ -98,10 +98,10 @@ Once the feed instance is properly configured, you must provide at least one `ma
 <?php
 namespace ShoppingFeed\Feed;
 
-$feed = (new ProductFeed)->setPlatform('Magento', '2.2.1');
+$generator = (new ProductGenerator)->setPlatform('Magento', '2.2.1');
 
 # Mappers are responsible to convert your data format to populated product
-$feed->addMapper(function(array $item, Product\Product $product) {
+$generator->addMapper(function(array $item, Product\Product $product) {
     $product
         ->setName($item['title'])
         ->setReference($item['sku'])
@@ -114,7 +114,7 @@ $items[0] = ['sku' => 1, 'title' => 'Product 1', 'price' => 5.99, 'quantity' => 
 $items[1] = ['sku' => 2, 'title' => 'Product 2', 'price' => 12.99, 'quantity' => 6];
 
 # now generates the feed with $items collection
-$feed->write($items);
+$generator->write($items);
 ```
 That's all ! Put this code in a script then run it, XML should appear to your output (browser or terminal).
 
@@ -141,9 +141,9 @@ In this example, we try to harcode quantity to zero when not specified in item, 
 <?php
 namespace ShoppingFeed\Feed;
 
-$feed = new ProductFeed;
+$generator = new ProductGenerator();
 
-$feed->addProcessor(function(array $item) {
+$generator->addProcessor(function(array $item) {
     if (! isset($item['quantity'])) {
         $item['quantity'] = 0;
     }
@@ -151,7 +151,7 @@ $feed->addProcessor(function(array $item) {
     return $item;
 });
  
-$feed->addMapper(function(array $item, Product\Product $product) {
+$generator->addMapper(function(array $item, Product\Product $product) {
     # Operation is now "safe", we have a valid quantity integer here
     $product->setQuantity($item['quantity']);
 });
@@ -180,20 +180,20 @@ Expected return value is a boolean, where:
 <?php
 namespace ShoppingFeed\Feed;
 
-$feed = new ProductFeed;
+$generator = new ProductGenerator();
 
 # Ignore all items with undefined quantity
-$feed->addFilter(function(array $item) {
+$generator->addFilter(function(array $item) {
    return isset($item['quantity']);
 });
 
 # Ignore all items prices above 10
-$feed->addFilter(function(array $item) {
+$generator->addFilter(function(array $item) {
    return $item['price'] <= 10;
 });
 
 # only items that match previous filters conditions are considered by mappers
-$feed->addMapper(function(array $item, Product\Product $product) {
+$generator->addMapper(function(array $item, Product\Product $product) {
     // do some stuff
 });
 ```
@@ -226,10 +226,10 @@ As an example of organisation, you can register 1 mapper for product, and 1 for 
 <?php
 namespace ShoppingFeed\Feed;
 
-$feed = new ProductFeed;
+$generator = new ProductGenerator();
 
 # Populate properties
-$feed->addMapper(function(array $item, Product\Product $product) {
+$generator->addMapper(function(array $item, Product\Product $product) {
     $product
         ->setName($item['title'])
         ->setReference($item['sku'])
@@ -238,7 +238,7 @@ $feed->addMapper(function(array $item, Product\Product $product) {
 });
 
 # Populate product's variations. Product properties are already populated by the previous mapper
-$feed->addMapper(function(array $item, Product\Product $product) {
+$generator->addMapper(function(array $item, Product\Product $product) {
     foreach ($item['declinations'] as $item) {
         $variation = $product->createVariation();
         $variation
@@ -268,8 +268,8 @@ This guaranty that memory usage will not increase with the number of products to
 The script will generates random products
 
 ```bash
-php tests/functional/simple.php <file> <number-of-products>
+php tests/functional/products.php <file> <number-of-products>
 
 # example:
-php tests/functional/simple.php feed.xml 1000
+php tests/functional/products.php feed.xml 1000
 ```   

@@ -14,18 +14,11 @@ class ProductFeedResult
     private $finishedAt;
 
     /**
-     * @var \SplFileInfo
-     */
-    private $info;
-
-    /**
      * @param \DateTimeInterface $startedAt
      * @param \DateTimeInterface $finishedAt
-     * @param \SplFileInfo       $info
      */
-    public function __construct(\DateTimeInterface $startedAt, \DateTimeInterface $finishedAt, \SplFileInfo $info)
+    public function __construct(\DateTimeInterface $startedAt, \DateTimeInterface $finishedAt)
     {
-        $this->info       = $info;
         $this->startedAt  = $startedAt;
         $this->finishedAt = $finishedAt;
     }
@@ -38,13 +31,5 @@ class ProductFeedResult
     public function getDuration()
     {
         return $this->finishedAt->getTimestamp() - $this->startedAt->getTimestamp();
-    }
-
-    /**
-     * @return \SplFileInfo
-     */
-    public function getFileInfo()
-    {
-        return $this->info;
     }
 }

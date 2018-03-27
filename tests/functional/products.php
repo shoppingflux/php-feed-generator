@@ -6,7 +6,7 @@ use ShoppingFeed\Feed\Product\Product;
 
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
-$feed = new ProductFeed($argv[1] ?? 'php://output');
+$feed = new ProductGenerator($argv[1] ?? 'php://output');
 $feed->setPlatform('Sf', '2.0.0');
 
 $feed->addProcessor(function(array $data) {
