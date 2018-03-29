@@ -4,11 +4,12 @@ namespace ShoppingFeed\Feed;
 use Faker\Factory;
 use ShoppingFeed\Feed\Product\Product;
 
-require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
-
-$feed = new ProductGenerator($argv[1] ?? 'php://output');
+$feed = $feed = require __DIR__ . '/bootstrap.php';
 $feed->setPlatform('Sf', '2.0.0');
 
+/**
+ * Hardcode shipping information
+ */
 $feed->addProcessor(function(array $data) {
     $data['shipping_cost'] = 12;
     $data['shipping_time'] = 2;
@@ -16,8 +17,11 @@ $feed->addProcessor(function(array $data) {
     return $data;
 });
 
+/**
+ * Add filter that exclude products when prices greater than 5
+ */
 $feed->addFilter(function(array $data) {
-    return $data['price'] > 100;
+    return $data['price'] > 5;
 });
 
 $feed->addMapper(function(array $data, Product $product) {
@@ -78,10 +82,5 @@ $generator = function($total) {
         ];
     }
 };
-
-if (PHP_SAPI !== 'cli') {
-    http_response_code(200);
-    header('Content-Type: application/xml');
-}
 
 $feed->write($generator($argv[2] ?? 10));

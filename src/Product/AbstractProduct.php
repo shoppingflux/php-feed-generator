@@ -17,7 +17,7 @@ abstract class AbstractProduct
     /**
      * @var int
      */
-    private $quantity;
+    private $quantity = 0;
 
     /**
      * @var float
@@ -65,7 +65,7 @@ abstract class AbstractProduct
      */
     public function setReference($reference)
     {
-        $this->reference = $reference;
+        $this->reference = trim($reference);
 
         return $this;
     }
@@ -93,7 +93,7 @@ abstract class AbstractProduct
      */
     public function setGtin($gtin)
     {
-        $this->gtin = $gtin;
+        $this->gtin = trim($gtin);
 
         return $this;
     }
@@ -317,9 +317,17 @@ abstract class AbstractProduct
     }
 
     /**
+     * @return bool
+     */
+    public function isValid()
+    {
+        return $this->reference && isset($this->price);
+    }
+
+    /**
      * @param mixed $date
      *
-     * @return \DateTimeImmutable|string
+     * @return \DateTimeImmutable|string|int
      */
     private function createDate($date)
     {

@@ -15,7 +15,7 @@ This library aims to simplify compliant feed generation for Shopping-Feed servic
 
 The component act as pipeline to convert any data set to compliant XML output, to a file or any other destination.
 
-From the user point of view, it consist on mapping your data to a `ShoppingFeed\Feed\Product` object.
+From the user point of view, it consist on mapping your data to a `ShoppingFeed\Feed\Product\Product` object.
 The library take cares of the rest : formatting data and write valid XML.
 
 
@@ -26,11 +26,10 @@ A minimal valid XML Product item requires the following properties:
 - A `reference` (aka SKU)
 - A `name`
 - A `price`
-- A `quantity`
 
 Your data source must contains those information, or you can hardcode some of them during feed generation.
 
-First, you should creates an instance of `ShoppingFeed\Feed\ProductFeed` and configure it according your needs
+First, you should creates an instance of generator and configure it according your needs
 
 ```php
 <?php
@@ -73,8 +72,8 @@ It will reduce the final file size approximately x9 smaller. Zlib compression ha
 
 ### Set up information
 
-The `ProductFeed` accept some settings or useful information, like the platform or application for which the feed has been generated.
-We recommand to always specify this setting, because it can help us to debug and provide appropriate support
+The generator accept some settings or useful information, like the platform or application for which the feed has been generated.
+We recommend to always specify this setting, because it can help us to debug and provide appropriate support
 
 ```php
 <?php
@@ -124,9 +123,9 @@ That's all ! Put this code in a script then run it, XML should appear to your ou
 This schema describe to loop pipeline execution order
 
 ```
--> exec processors[] -> exec filters[] -> exec mappers[] -> write ->
-|                                                                  |
-<-------------------------------------------------------------------
+-> exec processors[] -> exec filters[] -> exec mappers[] -> validate -> write ->
+|                                                                              |
+<------------------------------------------------------------------------------
 ```
 
 ### Processors
@@ -249,6 +248,31 @@ $generator->addMapper(function(array $item, Product\Product $product) {
 });
 ```
 
+### Validation
+
+By defaut, the generator does not run validation against products.
+When developing, you may catch invalid products and understand why some of them are invalids.
+To do so, you can specify how the generator handle validation :
+
+```php
+<?php
+namespace ShoppingFeed\Feed;
+
+$generator = new ProductGenerator();
+
+// Only exclude invalid products, with no error reporting.
+$generator->setValidationFlags(ProductGenerator::VALIDATE_EXCLUDE);
+
+// Or throw an exception once invalid product is met
+$generator->setValidationFlags(ProductGenerator::VALIDATE_EXCEPTION);
+```
+
+Validation requires that your products contains at least:
+
+- `reference`
+- `price`
+- `name` (only required for parent's products)
+
 ### Performances Considerations
 
 Generating large XML feed can be a very long process, so our advices in this area are:
@@ -263,13 +287,11 @@ Internally, the library uses `XmlReader` / `XmlWriter` to limit memory consumpti
 This guaranty that memory usage will not increase with the number of products to write, but only depends on the "size" of each products.
 
 
-### Execute test command
-
-The script will generates random products
+### Execute test commands
 
 ```bash
-php tests/functional/products.php <file> <number-of-products>
+php tests/functional/<filename>.php <file> <number-of-products>
 
 # example:
-php tests/functional/products.php feed.xml 1000
+php tests/functional/products-random.php feed.xml 1000
 ```   

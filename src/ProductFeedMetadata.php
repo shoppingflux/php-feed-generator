@@ -31,6 +31,11 @@ class ProductFeedMetadata
     /**
      * @var int
      */
+    private $invalid;
+
+    /**
+     * @var int
+     */
     private $written;
 
     public function __construct()
@@ -39,6 +44,7 @@ class ProductFeedMetadata
         $this->setPlatform('Unknown', 'Unknown');
         $this->filtered = 0;
         $this->written  = 0;
+        $this->invalid  = 0;
     }
 
     /**
@@ -124,9 +130,22 @@ class ProductFeedMetadata
         $this->filtered += 1;
     }
 
+    public function incrInvalid()
+    {
+        $this->invalid += 1;
+    }
+
     public function incrWritten()
     {
         $this->written += 1;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalCount()
+    {
+        return $this->invalid + $this->filtered + $this->written;
     }
 
     /**
@@ -143,5 +162,13 @@ class ProductFeedMetadata
     public function getWrittenCount()
     {
         return $this->written;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInvalidCount()
+    {
+        return $this->invalid;
     }
 }

@@ -28,6 +28,15 @@ final class Product extends AbstractProduct
      */
     private $variations = [];
 
+    /**
+     * @var ProductVariation
+     */
+    private $variationPrototype;
+
+    public function __construct()
+    {
+        $this->variationPrototype = new ProductVariation();
+    }
 
     /**
      * @return string
@@ -44,7 +53,7 @@ final class Product extends AbstractProduct
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name = trim($name);
 
         return $this;
     }
@@ -141,7 +150,7 @@ final class Product extends AbstractProduct
      */
     public function createVariation()
     {
-        $variation          = new ProductVariation();
+        $variation          = clone $this->variationPrototype;
         $this->variations[] = $variation;
 
         return $variation;
@@ -156,10 +165,37 @@ final class Product extends AbstractProduct
     }
 
     /**
-     * @return array
+     * @return ProductVariation[]
      */
     public function getVariations()
     {
         return $this->variations;
+    }
+
+    /**
+     * Validation requires that:
+     * - A name has been defined
+     * - A reference has been defined
+     * - A price has been set
+     *
+     * Variations validation only operates on:
+     * - reference
+     * - price
+     *
+     * return bool
+     */
+    public function isValid()
+    {
+        if ($this->name && parent::isValid()) {
+            foreach ($this->getVariations() as $variation) {
+                if (! $variation->isValid()) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }
