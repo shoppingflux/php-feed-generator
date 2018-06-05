@@ -129,15 +129,6 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             foreach ($product->getDiscounts() as $discount) {
                 $writer->startElement('discount');
                 $writer->writeAttribute('type', $discount->getType());
-                if ($discount->isSale()) {
-                    $writer->writeAttribute('sale', 1);
-                }
-                if ($start = $discount->getStartAt()) {
-                    $writer->writeAttribute('start', $start->format('c'));
-                }
-                if ($end = $discount->getEndAt()) {
-                    $writer->writeAttribute('end', $end->format('c'));
-                }
                 $writer->writeRaw($discount->getValue());
                 $writer->endElement();
             }
@@ -152,15 +143,6 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
                 if ($description = $shipping->getDescription()) {
                     $writer->writeElement('label', $shipping->getDescription());
                 }
-
-                $writer->startElement('delay');
-                $writer->writeAttribute('unit', $shipping->getDelayUnit());
-                if ($shipping->isDelayWithinOpening()) {
-                    $writer->writeAttribute('opening', 1);
-                }
-
-                $writer->writeRaw($shipping->getDelayValue());
-                $writer->endElement(); // delay
                 $writer->endElement(); // shipping
             }
             $writer->endElement();

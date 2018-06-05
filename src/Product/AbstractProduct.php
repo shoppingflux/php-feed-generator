@@ -1,5 +1,4 @@
 <?php
-
 namespace ShoppingFeed\Feed\Product;
 
 abstract class AbstractProduct
@@ -140,21 +139,13 @@ abstract class AbstractProduct
     }
 
     /**
-     * @param mixed                     $value
-     * @param bool                      $isSale
-     * @param string|\DateTimeInterface $startAt
-     * @param string|\DateTimeInterface $endAt
+     * @param float $value
      *
      * @return $this
      */
-    public function addDiscount($value, $isSale = false, $startAt = null, $endAt = null)
+    public function addDiscount($value)
     {
-        $this->discounts[] = new ProductDiscount(
-            $value,
-            $isSale,
-            $this->createDate($startAt),
-            $this->createDate($endAt)
-        );
+        $this->discounts[] = new ProductDiscount($value);
 
         return $this;
     }
@@ -177,14 +168,13 @@ abstract class AbstractProduct
 
     /**
      * @param float  $cost
-     * @param int    $delayInDays
      * @param string $description
      *
      * @return $this
      */
-    public function addShipping($cost, $delayInDays, $description = '')
+    public function addShipping($cost, $description = '')
     {
-        $this->shippings[] = new ProductShipping($cost, $delayInDays, $description);
+        $this->shippings[] = new ProductShipping($cost, $description);
 
         return $this;
     }
@@ -322,27 +312,5 @@ abstract class AbstractProduct
     public function isValid()
     {
         return $this->reference && isset($this->price);
-    }
-
-    /**
-     * @param mixed $date
-     *
-     * @return \DateTimeImmutable|string|int
-     */
-    private function createDate($date)
-    {
-        if (! $date) {
-            return null;
-        }
-
-        if ($date instanceof \DateTimeInterface) {
-            return $date;
-        }
-
-        if (is_numeric($date)) {
-            $date = '@' . $date;
-        }
-
-        return new \DateTimeImmutable($date);
     }
 }

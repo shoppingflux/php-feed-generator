@@ -12,7 +12,7 @@ $feed->setPlatform('Sf', '2.0.0');
  */
 $feed->addProcessor(function(array $data) {
     $data['shipping_cost'] = 12;
-    $data['shipping_time'] = 2;
+    $data['shipping_time'] = 'delivered in 2 days';
 
     return $data;
 });
@@ -55,7 +55,18 @@ $feed->addMapper(function(array $data, Product $product) {
 
 $generator = function($total) {
     $faker = Factory::create();
+
     while ($total--) {
+        $variartionCount = $argv[3] ?? 5;
+        $variations      = [];
+
+        while ($variartionCount--) {
+            $variations[] = [
+                'sku'       => $faker->ean13,
+                'price'     => $faker->randomFloat(2, 0, 200),
+                'quantity'  => $faker->numberBetween(0, 100)
+            ];
+        }
         yield [
             'name'              => $faker->name,
             'sku'               => $faker->ean13,
@@ -72,13 +83,7 @@ $generator = function($total) {
             'image_main'        => $faker->imageUrl(),
             'image1'            => $faker->imageUrl(),
             'image2'            => $faker->imageUrl(),
-            'variations'        => [
-                [
-                    'sku'       => $faker->ean13,
-                    'price'     => $faker->randomFloat(2, 0, 200),
-                    'quantity'  => $faker->numberBetween(0, 100)
-                ]
-            ]
+            'variations'        => $variations
         ];
     }
 };
