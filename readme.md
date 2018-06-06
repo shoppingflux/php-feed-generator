@@ -290,8 +290,8 @@ This guaranty that memory usage will not increase with the number of products to
 ### Execute test commands
 
 ```bash
-php tests/functional/<filename>.php <file> <number-of-products>
+php tests/functional/<filename>.php <file> <number-of-products> <number-of-children-per-product>
 
 # example:
-php tests/functional/products-random.php feed.xml 1000
+php tests/functional/products-random.php feed.xml 1000 0
 ```   

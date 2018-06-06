@@ -4,8 +4,8 @@ namespace ShoppingFeed\Feed;
 use Faker\Factory;
 use ShoppingFeed\Feed\Product\Product;
 
-$feed = $feed = require __DIR__ . '/bootstrap.php';
-$feed->setPlatform('Sf', '2.0.0');
+$feed = require __DIR__ . '/bootstrap.php';
+$feed->setPlatform('test-script', '1.0.0');
 
 /**
  * Hardcode shipping information
@@ -18,12 +18,15 @@ $feed->addProcessor(function(array $data) {
 });
 
 /**
- * Add filter that exclude products when prices greater than 5
+ * Add filter that exclude products when prices are greater than 5
  */
 $feed->addFilter(function(array $data) {
     return $data['price'] > 5;
 });
 
+/**
+ * Creates product from data-source
+ */
 $feed->addMapper(function(array $data, Product $product) {
     $product
         ->setReference($data['sku'])
@@ -41,6 +44,10 @@ $feed->addMapper(function(array $data, Product $product) {
         ->setAdditionalImages([$data['image1'], $data['image2']])
     ;
 });
+
+/**
+ * Creates product's variations from data-source
+ */
 $feed->addMapper(function(array $data, Product $product) {
    foreach ($data['variations'] as $item) {
        $product
@@ -53,14 +60,21 @@ $feed->addMapper(function(array $data, Product $product) {
    }
 });
 
-$generator = function($total) {
+/**
+ * Fake products generator
+ *
+ * @param int $total
+ *
+ * @return \Generator
+ */
+$generator = function($productCount, $variationCount) {
     $faker = Factory::create();
 
-    while ($total--) {
-        $variartionCount = $argv[3] ?? 5;
-        $variations      = [];
+    while ($productCount--) {
+        $vCount     = $variationCount;
+        $variations = [];
 
-        while ($variartionCount--) {
+        while ($vCount--) {
             $variations[] = [
                 'sku'       => $faker->ean13,
                 'price'     => $faker->randomFloat(2, 0, 200),
@@ -88,4 +102,9 @@ $generator = function($total) {
     }
 };
 
-$feed->write($generator($argv[2] ?? 10));
+$feed->write(
+    $generator(
+        isset($argv[2]) ? $argv[2] : 10,
+        isset($argv[3]) ? $argv[3] : 0
+    )
+);

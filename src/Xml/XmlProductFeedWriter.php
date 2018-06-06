@@ -152,9 +152,6 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             $writer->startElement('attributes');
             foreach ($product->getAttributes() as $attribute) {
                 $writer->startElement('attribute');
-                if ($attribute->isVariation()) {
-                    $writer->writeAttribute('type', 'variation');
-                }
                 $this->writeElement('name', $attribute->getName());
                 $this->writeCdataElement('value', $attribute->getValue());
                 $writer->endElement();

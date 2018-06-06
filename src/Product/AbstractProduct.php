@@ -33,7 +33,6 @@ abstract class AbstractProduct
      */
     private $shippings = [];
 
-
     /**
      * @var array
      */
@@ -199,13 +198,11 @@ abstract class AbstractProduct
      * @param string $name
      * @param string $value
      *
-     * @param bool   $isVariation
-     *
      * @return $this
      */
-    public function setAttribute($name, $value, $isVariation = false)
+    public function setAttribute($name, $value)
     {
-        $attributes = new ProductAttribute($name, $value, $isVariation);
+        $attributes = new ProductAttribute($name, $value);
 
         $this->attributes[$attributes->getName()] = $attributes;
 
