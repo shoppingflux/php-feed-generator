@@ -21,7 +21,7 @@ abstract class AbstractProduct
     /**
      * @var float
      */
-    private $price;
+    private $price = .0;
 
     /**
      * @var array
