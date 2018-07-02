@@ -47,9 +47,10 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
         $writer->endElement();
 
         $writer->endElement(); // catalog
-
         $writer->flush();
-        unset($writer);
+
+        // unlink object reference
+        unset($this->writer);
     }
 
     /**
