@@ -122,6 +122,9 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
         $this->writeElement('reference', $product->getReference());
         $this->writeElement('quantity', $product->getQuantity());
         $this->writeElement('price', $product->getPrice());
+        if ($link = $product->getLink()) {
+            $this->writeCdataElement('link', $link);
+        }
         if ($product->hasGtin()) {
             $this->writeElement('gtin', $product->getGtin());
         }

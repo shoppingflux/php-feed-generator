@@ -34,6 +34,7 @@ $feed->addMapper(function(array $data, Product $product) {
         ->setName($data['name'])
         ->setQuantity($data['quantity'])
         ->setPrice($data['price'])
+        ->setLink($data['link'])
         ->setDescription($data['description_full'], $data['description_short'])
         ->setBrand($data['brand_name'], $data['brand_link'])
         ->setCategory($data['category_name'], $data['category_link'])
@@ -85,6 +86,7 @@ $generator = function($productCount, $variationCount) {
             'name'              => $faker->name,
             'sku'               => $faker->ean13,
             'ean'               => $faker->ean13,
+            'link'              => $faker->url,
             'quantity'          => $faker->numberBetween(0, 100),
             'price'             => $faker->randomFloat(2, 0, 200),
             'old_price'         => $faker->randomFloat(2, 0, 200),

@@ -38,6 +38,34 @@ namespace ShoppingFeed\Feed;
 $generator = new ProductGenerator();
 ```
 
+### Recommended fields
+
+Even if there are not required, the following fields will ensure that your product will not be refused by any channel
+
+#### link
+
+back-link to the product on your shop, should be present for shopbot (Google Shopping...etc)
+
+#### image
+
+At least one product's image will prevent your product to be refused
+
+#### description
+
+Push a short description. Embedded html / javascript / css is irrelevant for a vast majority of channels 
+
+#### quantity
+
+When not set, the quantity is defined to zero. So fill this field and start selling !
+
+#### shipping cost / shipping time
+
+Shipping information is very useful for final client and effective cart calculation. If they apply, you should fill them    
+
+#### attributes
+
+Essential attributes (when apply) are color and size, but in general always provides attributes for products and variations  
+
 ### Set up URI
 
 By default, XML is wrote to the standard output, but you can specify an uri, like a local file :
@@ -53,7 +81,7 @@ $generator->setUri('file://my-feed.xml');
 ### Compress output
 
 From our experience, feed upload / download is a large part on time spend during the import process on Shopping Feed side.
-
+        
 As XML may be considered as an "heavy" format, it has a non negligible impact on network performance and cost : 
 That why we **highly recommend compression** when generation feed in production.
 

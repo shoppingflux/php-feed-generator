@@ -24,6 +24,11 @@ abstract class AbstractProduct
     private $price = .0;
 
     /**
+     * @var string
+     */
+    private $link;
+
+    /**
      * @var array
      */
     private $discounts = [];
@@ -113,6 +118,26 @@ abstract class AbstractProduct
     public function setQuantity($quantity)
     {
         $this->quantity = (int) $quantity;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLink()
+    {
+        return $this->link;
+    }
+
+    /**
+     * @param string $link
+     *
+     * @return $this
+     */
+    public function setLink($link)
+    {
+        $this->link = trim($link);
 
         return $this;
     }
