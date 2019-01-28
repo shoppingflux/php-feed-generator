@@ -52,7 +52,7 @@ class ProductGenerator
     /**
      * @var string
      */
-    private $writer = 'xml';
+    private $writer;
 
     /**
      * @var array
@@ -62,11 +62,43 @@ class ProductGenerator
     ];
 
     /**
-     * @param string $uri
+     * @param string $alias The short name used to select writer later on instance scope
+     * @param string $writerClass The writer class that implements ProductFeedWriterInterface
+     *
+     * @throws \InvalidArgumentException When the $$writerClass is not an implementation of ProductFeedWriterInterface
      */
-    public function __construct($uri = 'php://output')
+    public static function registerWriter($alias, $writerClass)
+    {
+        if (! in_array(ProductFeedWriterInterface::class, class_implements($writerClass), true)) {
+            throw new \InvalidArgumentException(
+                sprintf('Writer class shoud implements "%s" interface', ProductFeedWriterInterface::class)
+            );
+        }
+
+        self::$writers[$alias] = $writerClass;
+    }
+
+    /**
+     * Check if the alias is already registered
+     *
+     * @param string $alias
+     *
+     * @return bool
+     */
+    public static function hasWriterAlias($alias)
+    {
+       return isset(self::$writers[$alias]);
+    }
+
+    /**
+     * @param string string $uri         The uri where data will be written
+     * @param string string $writerAlias The writer to use for this generator instance
+     */
+    public function __construct($uri = 'php://output', $writerAlias = 'xml')
     {
         $this->setUri($uri);
+        $this->setWriter($writerAlias);
+
         $this->metadata = new ProductFeedMetadata();
         $this->validate = self::VALIDATE_NONE;
     }
@@ -74,11 +106,31 @@ class ProductGenerator
     /**
      * @param string $uri
      *
-     * @return ProductGenerator
+     * @return $this
      */
     public function setUri($uri)
     {
         $this->uri = $uri;
+
+        return $this;
+    }
+
+    /**
+     * @param string $alias The writer alias to uses
+     *
+     * @throws \InvalidArgumentException If the alias is not registered at class level
+     *
+     * @return $this
+     */
+    public function setWriter($alias)
+    {
+        if (! isset(self::$writers[$alias])) {
+            throw new \InvalidArgumentException(
+                sprintf('Writer alias "%s" is not registered', $alias)
+            );
+        }
+
+        $this->writer = $alias;
 
         return $this;
     }
