@@ -301,6 +301,30 @@ Validation requires that your products contains at least:
 - `price`
 - `name` (only required for parent's products)
 
+
+### Extends
+
+The Product generator uses by default a XML writer, but you can register your own `ShoppingFeed\Feed\ProductFeedWriterInterface` implementation if you need to customize the output.
+
+#### Register
+
+Writers are stored at class level, so you need to register them only once :
+
+```php
+<?php
+ShoppingFeed\Feed\ProductGenerator:registerWriter('csv', 'App\CsvWriter');
+```
+
+- `csv` : is an arbitrary writer identifier **alias**
+- `App\CsvWriter` : Class that implements ShoppingFeed\Feed\ProductFeedWriterInterface
+
+Once done, you can specify the writer **alias** to uses as second parameter of the constructor :
+
+```php
+<?php
+$generator = new ShoppingFeed\Feed\ProductGenerator('file.csv', 'csv')
+```
+
 ### Performances Considerations
 
 Generating large XML feed can be a very long process, so our advices in this area are:
