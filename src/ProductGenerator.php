@@ -58,7 +58,7 @@ class ProductGenerator
      * @var array
      */
     private static $writers = [
-        'xml' => Xml\XmlProductFeedWriter::class
+        'xml' => Xml\XmlProductFeedWriter::class,
     ];
 
     /**
@@ -87,7 +87,7 @@ class ProductGenerator
      */
     public static function hasWriterAlias($alias)
     {
-       return isset(self::$writers[$alias]);
+        return isset(self::$writers[$alias]);
     }
 
     /**
@@ -151,7 +151,7 @@ class ProductGenerator
     /**
      * Determine if every product must be validated.
      * Possible values are:
-     * 
+     *
      * - self::VALIDATE_NONE      : No validation at all, invalid products may be written to the feed
      * - self::VALIDATE_EXCLUDE   : Validated and excluded from the final result if invalid. No error reported
      * - self::VALIDATE_EXCEPTION : An exception is thrown when the first invalid product is met
@@ -224,6 +224,7 @@ class ProductGenerator
      */
     public function write($iterable)
     {
+
         if (! $iterable instanceof \Traversable && ! is_array($iterable)) {
             throw new \Exception(sprintf('cannot iterates over %s', gettype($iterable)));
         }
@@ -236,6 +237,11 @@ class ProductGenerator
         $writer->setAttributes($this->attributes);
 
         $prototype = new Product\Product();
+
+        $formatRigide = $writer instanceof ProductFeedRigidWriterInterface && $writer->formatRigide();
+        //painful choice
+        $itemList = [];
+
         foreach ($iterable as $item) {
             // Apply processors
             foreach ($this->processors as $processor) {
@@ -268,9 +274,40 @@ class ProductGenerator
                 continue;
             }
 
-            $writer->writeProduct($product);
-            $metadata->incrWritten();
+            if (!$formatRigide) {
+                $writer->writeProduct($product);
+                $metadata->incrWritten();
+            } else {
+                $itemList[] = $item;
+                /**
+                 * @var Product\ProductAttribute[] $attributes
+                 */
+                $attributes = $product->getAttributes();
+                foreach ($attributes as $attribute) {
+                    $writer->addAttributeName($attribute->getName());
+                }
+
+                $additionalImagesCount = count($product->getAdditionalImages());
+                if ($additionalImagesCount > $writer->getMaxAdditionalImagesQuantity()) {
+                    $writer->setMaxAdditionalImagesQuantity($additionalImagesCount);
+                }
+
+            }
         }
+
+        if ($formatRigide) {
+            $writer->writeHeader();
+
+            foreach ($itemList as $item) {
+                $product = clone $prototype;
+                foreach ($this->mappers as $mapper) {
+                    $mapper($item, $product);
+                }
+                $writer->writeProduct($product);
+                $metadata->incrWritten();
+            }
+        }
+
 
         $metadata->setFinishedAt(new \DateTimeImmutable());
         $writer->close($metadata);
@@ -290,4 +327,5 @@ class ProductGenerator
 
         return new $writerClass();
     }
+
 }
