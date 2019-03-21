@@ -14,9 +14,10 @@ use ShoppingFeed\Feed\Product\ProductShipping;
 use ShoppingFeed\Feed\Product\ProductVariation;
 use ShoppingFeed\Feed\ProductFeedMetadata;
 use ShoppingFeed\Feed\ProductFeedWriterInterface;
-use ShoppingFeed\Feed\ProductFeedRigidWriterInterface;
+use ShoppingFeed\Feed\RigidFormatWriterInterface;
+use ShoppingFeed\Feed\TempArrayFileWriter;
 
-class CsvProductFeedRigidWriter implements ProductFeedWriterInterface, ProductFeedRigidWriterInterface
+class CsvProductFeedWriter implements ProductFeedWriterInterface, RigidFormatWriterInterface
 {
     const VERSION = '1.0.0';
 
@@ -34,7 +35,14 @@ class CsvProductFeedRigidWriter implements ProductFeedWriterInterface, ProductFe
 
     private $writeBuffer = [];
 
+    /**
+     * @var TempArrayFileWriter
+     */
+    private $tempWriter = null;
 
+    /**
+     * @return bool
+     */
     public function formatRigid()
     {
         return true;
@@ -93,6 +101,10 @@ class CsvProductFeedRigidWriter implements ProductFeedWriterInterface, ProductFe
     }
 
 
+    /**
+     * @param $name
+     * @return void
+     */
     public function addAttributeName($name)
     {
         if (is_string($name) && $name !== '' && !in_array($name, $this->attributeNames)) {
@@ -100,7 +112,10 @@ class CsvProductFeedRigidWriter implements ProductFeedWriterInterface, ProductFe
         }
     }
 
-
+    /**
+     * @param string $uri
+     * @return void
+     */
     public function open($uri)
     {
         $this->uri = $uri;
@@ -109,6 +124,9 @@ class CsvProductFeedRigidWriter implements ProductFeedWriterInterface, ProductFe
     }
 
 
+    /**
+     * @return void
+     */
     public function writeHeader()
     {
         $imageHeaders = [];
@@ -127,6 +145,11 @@ class CsvProductFeedRigidWriter implements ProductFeedWriterInterface, ProductFe
         fputcsv($this->handle, $headers);
     }
 
+
+    /**
+     * @param Product $product
+     * @return void
+     */
     public function writeProduct(Product $product)
     {
         $row = [];
@@ -200,17 +223,26 @@ class CsvProductFeedRigidWriter implements ProductFeedWriterInterface, ProductFe
 
     }
 
+    /**
+     * @param array $attributes
+     */
     public function setAttributes(array $attributes)
     {
     }
 
-
+    /**
+     * @param ProductFeedMetadata $metadata
+     * @return void
+     */
     public function close(ProductFeedMetadata $metadata)
     {
         $this->pushWriteBuffer();
         $this->closeHandle();
     }
 
+    /**
+     * @return void
+     */
     private function closeHandle()
     {
         if ($this->handle != null) {
@@ -219,7 +251,10 @@ class CsvProductFeedRigidWriter implements ProductFeedWriterInterface, ProductFe
         }
     }
 
-
+    /**
+     * @param $mode
+     * @return void
+     */
     private function prepareFilePointer($mode)
     {
         $this->closeHandle();
@@ -294,35 +329,70 @@ class CsvProductFeedRigidWriter implements ProductFeedWriterInterface, ProductFe
         }
     }
 
-
+    /**
+     * @param $element
+     * @return string
+     */
     private function getValue($element)
     {
         return empty($element) ? self::EMPTY_VALUE : $element;
     }
 
+    /**
+     * @return void
+     */
     private function pushWriteBuffer()
     {
         if (count($this->writeBuffer) > 0) {
-            fwrite($this->handle, self::arrayToCSV($this->writeBuffer));
+            fwrite($this->handle, \ShoppingFeed\Feed\arrayToCSV($this->writeBuffer));
             $this->writeBuffer = [];
             $this->writeCount = 0;
         }
 
     }
 
-
-    public static function arrayToCSV($arr)
+    /**
+     * @param $uri
+     * @return void
+     */
+    public function generateTempArrayFileWriter()
     {
-        $f = fopen('php://memory', 'rw');
-        foreach ($arr as $row) {
-            fputcsv($f, $row);
-        }
-        rewind($f);
-        $csv = stream_get_contents($f);
-        fclose($f);
-
-        return $csv;
-
+        $this->tempWriter = new TempArrayFileWriter();
     }
+
+
+    /**
+     * @return TempArrayFileWriter|null
+     */
+    public function getTempArrayFileWriter()
+    {
+        return $this->tempWriter;
+    }
+
+    public function writeIntoTemp($item)
+    {
+        if (empty($this->tempWriter)) {
+            return ;
+        }
+        $this->tempWriter->write($item);
+    }
+
+    public function closeTempWriter()
+    {
+        if (empty($this->tempWriter)) {
+            return ;
+        }
+        $this->tempWriter->close();
+    }
+
+    public function getTempFilePath()
+    {
+        if (empty($this->tempWriter)) {
+            return '';
+        }
+        
+        return $this->tempWriter->getTempFilePath();
+    }
+
 
 }

@@ -1,9 +1,8 @@
 <?php
-
 namespace ShoppingFeed\Feed;
 
 
-interface ProductFeedRigidWriterInterface
+interface RigidFormatWriterInterface
 {
     /**
      * @param string $uri
@@ -25,6 +24,7 @@ interface ProductFeedRigidWriterInterface
     public function setMaxAdditionalImagesQuantity($quantity);
 
 
+
     /**
      * @return int
      */
@@ -35,4 +35,29 @@ interface ProductFeedRigidWriterInterface
      */
     public function writeHeader();
 
+    /**
+     * @return void
+     */
+    public function generateTempArrayFileWriter();
+
+    /**
+     * @return TempArrayFileWriter
+     */
+    public function getTempArrayFileWriter();
+
+    /**
+     * @param $item
+     * @return void
+     */
+    public function writeIntoTemp($item);
+
+    /**
+     * @return void
+     */
+    public function closeTempWriter();
+
+    /**
+     * @return string
+     */
+    public function getTempFilePath();
 }

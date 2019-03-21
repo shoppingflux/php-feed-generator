@@ -59,7 +59,6 @@ class ProductGenerator
      */
     private static $writers = [
         'xml' => Xml\XmlProductFeedWriter::class,
-        'csv' => Csv\CsvProductFeedRigidWriter::class
     ];
 
     /**
@@ -88,7 +87,7 @@ class ProductGenerator
      */
     public static function hasWriterAlias($alias)
     {
-        return isset(self::$writers[$alias]);
+       return isset(self::$writers[$alias]);
     }
 
     /**
@@ -152,7 +151,7 @@ class ProductGenerator
     /**
      * Determine if every product must be validated.
      * Possible values are:
-     *
+     * 
      * - self::VALIDATE_NONE      : No validation at all, invalid products may be written to the feed
      * - self::VALIDATE_EXCLUDE   : Validated and excluded from the final result if invalid. No error reported
      * - self::VALIDATE_EXCEPTION : An exception is thrown when the first invalid product is met
@@ -239,9 +238,11 @@ class ProductGenerator
 
         $prototype = new Product\Product();
 
-        $formatRigide = $writer instanceof ProductFeedRigidWriterInterface && $writer->formatRigide();
-        //painful choice
-        $itemList = [];
+        $formatRigid = $writer instanceof RigidFormatWriterInterface && $writer->formatRigid();
+
+        if ($formatRigid) {
+            $writer->generateTempArrayFileWriter();
+        }
 
         foreach ($iterable as $item) {
             // Apply processors
@@ -275,11 +276,13 @@ class ProductGenerator
                 continue;
             }
 
-            if (!$formatRigide) {
+            if (!$formatRigid) {
                 $writer->writeProduct($product);
                 $metadata->incrWritten();
             } else {
-                $itemList[] = $item;
+                
+                $writer->writeIntoTemp($item);
+
                 /**
                  * @var Product\ProductAttribute[] $attributes
                  */
@@ -296,10 +299,11 @@ class ProductGenerator
             }
         }
 
-        if ($formatRigide) {
+        if ($formatRigid) {
             $writer->writeHeader();
 
-            foreach ($itemList as $item) {
+            foreach (\ShoppingFeed\Feed\read($writer->getTempFilePath()) as $itemEncoded) {
+                $item = json_decode($itemEncoded, true);
                 $product = clone $prototype;
                 foreach ($this->mappers as $mapper) {
                     $mapper($item, $product);
@@ -307,12 +311,13 @@ class ProductGenerator
                 $writer->writeProduct($product);
                 $metadata->incrWritten();
             }
+            $writer->closeTempWriter();
         }
 
 
         $metadata->setFinishedAt(new \DateTimeImmutable());
         $writer->close($metadata);
-
+       
         return new ProductFeedResult(
             $metadata->getStartedAt(),
             $metadata->getFinishedAt()
