@@ -20,7 +20,7 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
     public function open($destination)
     {
         $this->writer = new \XMLWriter();
-        $this->writer->openURI($destination);
+        $this->writer->openUri($destination);
         $this->writer->setIndent(true);
 
         $this->writer->startDocument('1.0', 'utf-8');
@@ -168,7 +168,7 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             if ($main = $product->getMainImage()) {
                 $writer->startElement('image');
                 $writer->writeAttribute('type', 'main');
-                $this->writeCData($main);
+                $this->writeCdata($main);
                 $writer->endElement();
             }
             foreach ($product->getAdditionalImages() as $image) {

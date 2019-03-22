@@ -5,7 +5,7 @@ This library aims to simplify compliant feed generation for Shopping-Feed servic
 ### Requirements
 
 - PHP version 5.5 or above
-- PHP XML extension
+- PHP XML extension when using XML output
 
 ### Installation
 
@@ -116,6 +116,24 @@ $generator
     ->setAttribute('storeName', 'my great store')
     ->setAttribute('storeUrl', 'http://my-greate-store.com');
 ```
+
+### Define output format
+
+Currently, the library supports the following format:
+
+- `xml` : default, all features available
+- `csv` : no support for feed attributes, platform and metadata. Shipping and discount are limited to the 1 item.
+
+The format can be defined like this
+
+```php
+<?php
+namespace ShoppingFeed\Feed;
+// constructor
+$generator = new ProductGenerator('file://my-feed.xml', 'xml');
+// Or with setter
+$generator->setWriter('csv');
+````  
 
 ### Basic Example
 
