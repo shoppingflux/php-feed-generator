@@ -135,6 +135,24 @@ $generator = new ProductGenerator('file://my-feed.xml', 'xml');
 $generator->setWriter('csv');
 ````  
 
+#### CSV Specific options
+
+The CSV output writer require to store data temporary. By default, data are flushed to a file once 2MB of memory is reached.
+You can disable or increase memory usage like this
+
+```php
+<?php
+namespace ShoppingFeed\Feed;
+// Disable memory allocation
+Csv\CsvProductFeedWriter::setDefaultMaxMemoryUsage(0);
+
+// Allocate 100MB of memory (value is in bytes)
+Csv\CsvProductFeedWriter::setDefaultMaxMemoryUsage(100^4);
+
+// No memory limit
+Csv\CsvProductFeedWriter::setDefaultMaxMemoryUsage(-1);
+```
+
 ### Basic Example
 
 Once the feed instance is properly configured, you must provide at least one `mapper` and a dataset to run the feed generation against
