@@ -5,7 +5,7 @@ This library aims to simplify compliant feed generation for Shopping-Feed servic
 ### Requirements
 
 - PHP version 5.5 or above
-- PHP XML extension
+- PHP XML extension when using XML output
 
 ### Installation
 
@@ -115,6 +115,42 @@ $generator = (new ProductGenerator)
 $generator    
     ->setAttribute('storeName', 'my great store')
     ->setAttribute('storeUrl', 'http://my-greate-store.com');
+```
+
+### Define output format
+
+Currently, the library supports the following format:
+
+- `xml` : default, all features available
+- `csv` : no support for feed attributes, platform and metadata. Shipping and discount are limited to the 1 item.
+
+The format can be defined like this
+
+```php
+<?php
+namespace ShoppingFeed\Feed;
+// constructor
+$generator = new ProductGenerator('file://my-feed.xml', 'xml');
+// Or with setter
+$generator->setWriter('csv');
+````  
+
+#### CSV Specific options
+
+The CSV output writer require to store data temporary. By default, data are flushed to a file once 2MB of memory is reached.
+You can disable or increase memory usage like this
+
+```php
+<?php
+namespace ShoppingFeed\Feed;
+// Disable memory allocation
+Csv\CsvProductFeedWriter::setDefaultMaxMemoryUsage(0);
+
+// Allocate 100MB of memory (value is in bytes)
+Csv\CsvProductFeedWriter::setDefaultMaxMemoryUsage(100^4);
+
+// No memory limit
+Csv\CsvProductFeedWriter::setDefaultMaxMemoryUsage(-1);
 ```
 
 ### Basic Example

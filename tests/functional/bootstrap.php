@@ -8,4 +8,12 @@ if (PHP_SAPI !== 'cli') {
     header('Content-Type: application/xml');
 }
 
-return new ProductGenerator(empty($argv[1]) ? 'php://output' : $argv[1], 'xml');
+if (empty($argv[1])) {
+    $file    = 'php://output';
+    $writer  = 'xml';
+} else {
+    $file   = $argv[1];
+    $writer = substr(strrchr($argv[1], '.'), 1);
+}
+
+return new ProductGenerator($file, $writer);

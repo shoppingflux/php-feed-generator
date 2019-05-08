@@ -58,7 +58,8 @@ class ProductGenerator
      * @var array
      */
     private static $writers = [
-        'xml' => Xml\XmlProductFeedWriter::class
+        'xml' => Xml\XmlProductFeedWriter::class,
+        'csv' => Csv\CsvProductFeedWriter::class,
     ];
 
     /**
