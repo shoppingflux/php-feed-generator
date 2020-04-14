@@ -17,6 +17,6 @@
   "require-dev": {
     "psr/log": "^1.0",
     "fzaninotto/faker": "^1.7",
-    "shoppingfeed/feed-xml": "1.*"
+    "shoppingfeed/feed-xml": "^1.0"
   }
 }
