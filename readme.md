@@ -1,6 +1,17 @@
 # Feed Generator
 
-This library aims to simplify compliant feed generation for Shopping-Feed services.
+This library aims to simplify compliant feed generation for ShoppingFeed services.
+
+It allows you to format, filter, map & validate your products using a series of methods defined in this library. Once all this is done, a file is generated and it is *this* file that will be used by ShoppingFeed to import all your products so that they can be dispatched to the different marketplaces. 
+
+When should you use this feed generator ?
+- if you are considering using the [ShoppingFeed solution](https://www.shopping-feed.com/)
+- and your feed (the file containing all your products) is not in a format that is supported out of the box
+- and you wish to have an easy / speedy set-up
+- or if you want to provide an out-of-the-box format for new versions of existing e-commerce platforms (such as Magento, Prestashop etc.)
+- or if you want to avoid generating and formatting the feed yourself
+
+The generated feed is, by default, in [the standard XML ShoppingFeed format](https://github.com/shoppingflux/feed-xml).
 
 ### Requirements
 
@@ -13,34 +24,56 @@ This library aims to simplify compliant feed generation for Shopping-Feed servic
 
 ### Overview
 
-The component act as pipeline to convert any data set to compliant XML output, to a file or any other destination.
+The component acts as pipeline to convert any data set to compliant XML output, to a file or any other destination.
 
-From the user point of view, it consist on mapping your data to a `ShoppingFeed\Feed\Product\Product` object.
-The library take cares of the rest : formatting data and write valid XML.
+From the user's point of view, it consists of mapping your data to a `ShoppingFeed\Feed\Product\Product` object.
+The library take cares of the rest : formatting the data and writing the valid XML.
 
 
 ### Getting Started
-
-A minimal valid XML Product item requires the following properties:
-
-- A `reference` (aka SKU)
-- A `name`
-- A `price`
-
-Your data source must contains those information, or you can hardcode some of them during feed generation.
-
-First, you should creates an instance of generator and configure it according your needs
 
 ```php
 <?php
 namespace ShoppingFeed\Feed;
 
+# first create an instance of the generator
 $generator = new ProductGenerator();
+
+# then, you need to define at least one mapper 
+$generator->addMapper(
+    # more details below
+);
+
+# you also need your data / products at hand
+$items = [
+    [
+        # product 1 
+    ],
+    [
+        # product 2
+    ],
+    # ...
+];
+
+# finally, you can generate the feed
+$generator->write($items);
 ```
+
+This is a skeleton example. In the following sections, we will detail each step, specifying different options and adding more intermediary optional steps.
+
+### Mandatory fields
+
+In the generated feed, only valid products will be written. A minimal valid Product item requires the following properties:
+
+- A `reference` (aka SKU)
+- A `name`
+- A `price`
+
+Your data source must contain this information, or you can hardcode some of it during the feed generation.
 
 ### Recommended fields
 
-Even if there are not required, the following fields will ensure that your product will not be refused by any channel
+Even if they are not required, the following fields will ensure that your product will not be refused by any channel :
 
 #### link
 
@@ -48,27 +81,27 @@ back-link to the product on your shop, should be present for shopbot (Google Sho
 
 #### image
 
-At least one product's image will prevent your product to be refused
+At least one product image will prevent your product from being refused.
 
 #### description
 
-Push a short description. Embedded html / javascript / css is irrelevant for a vast majority of channels 
+Push a short description. Embedded html / javascript / css is irrelevant for a vast majority of channels.
 
 #### quantity
 
-When not set, the quantity is defined to zero. So fill this field and start selling !
+When not set, the quantity is set to zero. So make sure to set this field and start selling !
 
 #### shipping cost / shipping time
 
-Shipping information is very useful for final client and effective cart calculation. If they apply, you should fill them    
+Shipping information is very useful for the final client and an effective total cart calculation. If they apply, you should provide them.
 
 #### attributes
 
-Essential attributes (when apply) are color and size, but in general always provides attributes for products and variations  
+Essential attributes (when apply) are color and size, but in general always provides attributes for products and their variations.  
 
-### Set up URI
+### Specify where the feed will be written
 
-By default, XML is wrote to the standard output, but you can specify an uri, like a local file :
+By default, XML is written to the standard output, but you can specify an uri, like a local file :
 
 ```php
 <?php
@@ -80,13 +113,13 @@ $generator->setUri('file://my-feed.xml');
 
 ### Compress output
 
-From our experience, feed upload / download is a large part on time spend during the import process on Shopping Feed side.
+From our experience, feed upload / download accounts for a large chunk of time in the import process at ShoppingFeed.
         
-As XML may be considered as an "heavy" format, it has a non negligible impact on network performance and cost : 
-That why we **highly recommend compression** when generation feed in production.
+As XML may be considered a "heavy" format, it has a non negligible impact on network performance and cost : 
+That is why we **highly recommend compression** when generating feeds in production.
 
-Compression is natively supported by [PHP stream wrappers](http://php.net/manual/en/wrappers.compression.php), so the only thing you have to do is to specify the compression stream in file uri 
-(Shopping Feed only supports *gzip* compression at the moment) :
+Compression is natively supported by [PHP stream wrappers](http://php.net/manual/en/wrappers.compression.php), so the only thing you have to do is to specify the compression stream in the file uri 
+(ShoppingFeed only supports *gzip* compression at the moment) :
 
 ```php
 <?php
@@ -96,12 +129,12 @@ $generator = new ProductGenerator();
 $generator->setUri('compress.zlib://my-feed.xml.gz');
 ```
 
-It will reduce the final file size approximately x9 smaller. Zlib compression has very low footprint on processor
+It will reduce the final file size to approximately x9 smaller. Zlib compression has a very low footprint on the processor.
 
 ### Set up information
 
-The generator accept some settings or useful information, like the platform or application for which the feed has been generated.
-We recommend to always specify this setting, because it can help us to debug and provide appropriate support
+The generator accepts some settings or useful information, like the platform or application for which the feed has been generated.
+We recommend to always specify this setting, because it can help us to debug and provide appropriate support.
 
 ```php
 <?php
@@ -129,33 +162,33 @@ The format can be defined like this
 ```php
 <?php
 namespace ShoppingFeed\Feed;
-// constructor
-$generator = new ProductGenerator('file://my-feed.xml', 'xml');
-// Or with setter
+# constructor
+$generator = new ProductGenerator('file://my-feed.csv', 'csv');
+# Or with setter
 $generator->setWriter('csv');
 ````  
 
 #### CSV Specific options
 
-The CSV output writer require to store data temporary. By default, data are flushed to a file once 2MB of memory is reached.
-You can disable or increase memory usage like this
+The CSV output writer requires storing data temporarily. By default, data is flushed to a file once 2MB of memory is reached.
+You can disable or increase memory usage like this :
 
 ```php
 <?php
 namespace ShoppingFeed\Feed;
-// Disable memory allocation
+# Disable memory allocation
 Csv\CsvProductFeedWriter::setDefaultMaxMemoryUsage(0);
 
-// Allocate 100MB of memory (value is in bytes)
+# Allocate 100MB of memory (value is in bytes)
 Csv\CsvProductFeedWriter::setDefaultMaxMemoryUsage(100^4);
 
-// No memory limit
+# No memory limit
 Csv\CsvProductFeedWriter::setDefaultMaxMemoryUsage(-1);
 ```
 
 ### Basic Example
 
-Once the feed instance is properly configured, you must provide at least one `mapper` and a dataset to run the feed generation against
+Once the feed instance is properly configured, you must provide at least one `mapper` and a dataset to run the feed generation against.
 
 ```php
 <?php
@@ -163,7 +196,7 @@ namespace ShoppingFeed\Feed;
 
 $generator = (new ProductGenerator)->setPlatform('Magento', '2.2.1');
 
-# Mappers are responsible to convert your data format to populated product
+# Mappers are responsible for converting your data format to populated product
 $generator->addMapper(function(array $item, Product\Product $product) {
     $product
         ->setName($item['title'])
@@ -184,7 +217,7 @@ That's all ! Put this code in a script then run it, XML should appear to your ou
 
 ## Data Processing pipeline
 
-This schema describe to loop pipeline execution order
+This schema describes the execution pipeline loop that the generator will apply when generating your feed, for each product :
 
 ```
 -> exec processors[] -> exec filters[] -> exec mappers[] -> validate -> write ->
@@ -194,11 +227,11 @@ This schema describe to loop pipeline execution order
 
 ### Processors
 
-In some case, you may need to pre-process data before to map them.
+In some case, you may need to pre-process data before mapping it.
 
-This can be achieved in mappers or in your dataset, but sometimes things have to be separated, so you can register processors that are executed before mappers, and prepare your data before the mapping process.
+This can also be achieved in mappers or in your dataset, but sometimes things have to be separated, so you can register processors that are executed before mappers, and prepare your data before the mapping process.
 
-In this example, we try to harcode quantity to zero when not specified in item, to populate required `quantity` field later
+In this example, we harcode the description when none is provided.
 
 ```php
 <?php
@@ -207,36 +240,35 @@ namespace ShoppingFeed\Feed;
 $generator = new ProductGenerator();
 
 $generator->addProcessor(function(array $item) {
-    if (! isset($item['quantity'])) {
-        $item['quantity'] = 0;
+    if (! isset($item['description'])) {
+        $item['description'] = 'Product description coming soon';
     }
     # modified data must be returned
     return $item;
 });
  
 $generator->addMapper(function(array $item, Product\Product $product) {
-    # Operation is now "safe", we have a valid quantity integer here
-    $product->setQuantity($item['quantity']);
+    $product->setDescription($item['description']);
 });
 ```
 
-As mappers, you can register any processors as you want, but processors :
+You can register as many processors as you want, but processors :
 
 - Only accept $item as argument
-- Expects return value
-- Returned value is used for the next stage (next processor or next mapper)
+- Expect a return value
+- The returned value is used for the next stage (next processor or next mapper)
 
 
 ### Filters
 
-Filters are designed discard some items from the feed.
+Filters, as the name implies, are designed to discard some items from the feed, while keeping others.
 
-Filters are executed **after** processors, because item must be completely filled before to make the decision to keep it or not.
+Filters are executed **after** processors, because items must be completely filled in before making the decision to keep it or not.
 
-Expected return value is a boolean, where:
+The expected return value of a filter is a boolean, where:
 
-- `TRUE`  : the item is passed to mappers
-- `FALSE` : the item is ignored
+- `TRUE`  : the item is passed to the next item in the pipeline, namely mappers
+- `FALSE` : the item is discarded
 
 
 ```php
@@ -250,12 +282,12 @@ $generator->addFilter(function(array $item) {
    return isset($item['quantity']);
 });
 
-# Ignore all items prices above 10
+# Ignore all items with prices above 10
 $generator->addFilter(function(array $item) {
    return $item['price'] <= 10;
 });
 
-# only items that match previous filters conditions are considered by mappers
+# only items that pass the previous filter conditions are considered by mappers
 $generator->addMapper(function(array $item, Product\Product $product) {
     // do some stuff
 });
@@ -263,11 +295,11 @@ $generator->addMapper(function(array $item, Product\Product $product) {
 
 ### Mappers
 
-As stated above, at least one mapper must be registered, this is where you populate the `Product` instance, which is later converted to XML by the library
+As stated above, at least one mapper must be registered, this is where you populate the `Product` instance, which is later converted to XML (or other formats) by the library.
 
-The `addMapper` method accept any [callable type](http://php.net/manual/en/language.types.callable.php), like functions or invokable objects.
+The `addMapper` method accepts any [callable type](http://php.net/manual/en/language.types.callable.php), like functions or invokable objects.
 
-Mappers are inkoked on each iteration over the collection you provided in the `generate` method, with the following arguments
+Mappers are invoked on each iteration over the collection you provided in the `generate` method, with the following arguments
 
 - `(mixed $item, ShoppingFeed\Feed\Product\Product $product)`
 
@@ -278,12 +310,12 @@ where:
 
 Note that there is *no expected return value* from your callback
 
-#### How mapper are invoked ?
+#### How mappers are invoked ?
 
-You can provide any mappers as you want, they are executed in FIFO (First registered, First executed) mode.
-The ability to register more than once mapper can helps to keep your code organized as you want, and there is no particular performances hints when registering many mapper.
+You can provide as many mappers as you want, they are executed in FIFO (First in, First out) mode - that is to say in the order provided.
+The ability to register more than one mapper can help keep your code organized as you want, and there is no particular performance hits when registering multiple mappers.
 
-As an example of organisation, you can register 1 mapper for product, and 1 for its variations
+As an example of organisation, you can register 1 mapper for handling the main product, and 1 mapper for its variations.
 
 ```php
 <?php
@@ -291,7 +323,7 @@ namespace ShoppingFeed\Feed;
 
 $generator = new ProductGenerator();
 
-# Populate properties
+# Populate product properties
 $generator->addMapper(function(array $item, Product\Product $product) {
     $product
         ->setName($item['title'])
@@ -302,7 +334,7 @@ $generator->addMapper(function(array $item, Product\Product $product) {
 
 # Populate product's variations. Product properties are already populated by the previous mapper
 $generator->addMapper(function(array $item, Product\Product $product) {
-    foreach ($item['declinations'] as $item) {
+    foreach ($item['variations'] as $item) {
         $variation = $product->createVariation();
         $variation
             ->setReference($item['sku'])
@@ -314,9 +346,9 @@ $generator->addMapper(function(array $item, Product\Product $product) {
 
 ### Validation
 
-By defaut, the generator does not run validation against products.
-When developing, you may catch invalid products and understand why some of them are invalids.
-To do so, you can specify how the generator handle validation :
+By default, the generator does not run validation against products.
+When developing, you may catch invalid products and understand why some of them are invalid.
+To do so, you can specify how the generator should handle validation :
 
 ```php
 <?php
@@ -324,58 +356,60 @@ namespace ShoppingFeed\Feed;
 
 $generator = new ProductGenerator();
 
-// Only exclude invalid products, with no error reporting.
+# Only exclude invalid products, with no error reporting.
 $generator->setValidationFlags(ProductGenerator::VALIDATE_EXCLUDE);
 
-// Or throw an exception once invalid product is met
+# Or throw an exception once invalid product is met
 $generator->setValidationFlags(ProductGenerator::VALIDATE_EXCEPTION);
 ```
 
-Validation requires that your products contains at least:
+Validation requires that your products contain at least:
 
-- `reference`
+- `reference` (SKU)
 - `price`
 - `name` (only required for parent's products)
 
 
-### Extends
+### Customizing the output
 
-The Product generator uses by default a XML writer, but you can register your own `ShoppingFeed\Feed\ProductFeedWriterInterface` implementation if you need to customize the output.
+The Product generator uses by default an XML writer, but you can register your own `ShoppingFeed\Feed\ProductFeedWriterInterface` implementation if you need to customize the output.
 
-#### Register
+#### Registering a new writer
 
 Writers are stored at class level, so you need to register them only once :
 
 ```php
 <?php
-ShoppingFeed\Feed\ProductGenerator:registerWriter('csv', 'App\CsvWriter');
+ShoppingFeed\Feed\ProductGenerator::registerWriter('csv', 'App\CsvWriter');
 ```
 
 - `csv` : is an arbitrary writer identifier **alias**
-- `App\CsvWriter` : Class that implements ShoppingFeed\Feed\ProductFeedWriterInterface
+- `App\CsvWriter` : class that implements `ShoppingFeed\Feed\ProductFeedWriterInterface
 
-Once done, you can specify the writer **alias** to uses as second parameter of the constructor :
+Once this is done, you can specify the writer **alias** as a second parameter of the constructor :
 
 ```php
 <?php
-$generator = new ShoppingFeed\Feed\ProductGenerator('file.csv', 'csv')
+$generator = new ShoppingFeed\Feed\ProductGenerator('file.csv', 'csv');
 ```
 
-### Performances Considerations
+### Performance Considerations
 
-Generating large XML feed can be a very long process, so our advices in this area are:
+Generating large XML feeds can be a very long process, so our advice is :
 
 - Run feed generation offline from a command line / cron : PHP [set max_exection_time to 0](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) in this mode
-- Try to generate feed on different machine than web-store, or when the traffic is limited : it may impact the your visitor experience by blocking a thread  
-- Limit the number of SQL requests : avoid running request in the loop
-- Paginate your results on large dataset, this will limit memory consumption and network traffic per request
-- Make uses of compression when writing file : this will save network bandwidth and we will be able to import your feed faster
+- Try to generate the feed on a different machine than the one acting as your web server, or on a machine where the traffic is limited : the feed generation process may impact the visitors' experience, by blocking a thread  
+- Limit the number of SQL requests : avoid running requests in a loop
+- Paginate your results on large datasets, this will limit memory consumption and network traffic per request
+- Make uses of compression when writing to a file : this will save network bandwidth and we will be able to import your feed faster
 
 Internally, the library uses `XmlReader` / `XmlWriter` to limit memory consumption. Product objects and generated XML are flushed from memory after each iteration.
-This guaranty that memory usage will not increase with the number of products to write, but only depends on the "size" of each products.
+This guarantees that memory usage will not increase with the number of products to write, but will instead only depend on the "size" of each product.
 
 
 ### Execute test commands
+
+If you just want to play around with the library and don't yet have products of your own, you can use the following command to generate "dummy" products that will allow you to play with the library and get a feel for how it works. 
 
 ```bash
 php tests/functional/<filename>.php <file> <number-of-products> <number-of-children-per-product>
