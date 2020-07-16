@@ -334,7 +334,7 @@ $generator->addMapper(function(array $item, Product\Product $product) {
 
 # Populate product's variations. Product properties are already populated by the previous mapper
 $generator->addMapper(function(array $item, Product\Product $product) {
-    foreach ($item['children'] as $item) {
+    foreach ($item['variations'] as $item) {
         $variation = $product->createVariation();
         $variation
             ->setReference($item['sku'])
