@@ -1,8 +1,11 @@
 # Feed Generator
 
-This library aims to simplify compliant feed generation for ShoppingFeed services.
+This library aims to simplify compliant feed generation for ShoppingFeed services. If we want to unpack this statement : 
+- a *feed* is a file that contains products (a collection of references, descriptions, prices, quantities, image links etc.)
+- a *compliant feed* is, by default, an XML file that is compliant with [the rules defined here](https://github.com/shoppingflux/feed-xml/blob/develop/feed.xsd) (for an example of what such a file might look like, [you can check this example](https://github.com/shoppingflux/feed-xml/blob/develop/examples/minimal.xml)); I say by default, because we can have other formats, but more on that later
+- you can find out more about the *ShoppingFeed services* [on our website](https://www.shopping-feed.com/)
 
-It allows you to format, filter, map & validate your products using a series of methods defined in this library. Once all this is done, a file is generated and it is *this* file that will be used by ShoppingFeed to import all your products so that they can be dispatched to the different marketplaces. 
+It allows you to format, filter, map & validate your products using a series of methods defined in this library. Once all this is done, the generator outputs a file: it is *this* file that will be used by the ShoppingFeed solution to import all your products so that they can be dispatched to the different marketplaces. 
 
 When should you use this feed generator ?
 - if you are considering using the [ShoppingFeed solution](https://www.shopping-feed.com/)
@@ -11,7 +14,9 @@ When should you use this feed generator ?
 - or if you want to provide an out-of-the-box format for new versions of existing e-commerce platforms (such as Magento, Prestashop etc.)
 - or if you want to avoid generating and formatting the feed yourself
 
-The generated feed is, by default, in [the standard XML ShoppingFeed format](https://github.com/shoppingflux/feed-xml).
+The generated feed produced by this library is, by default, in [the standard XML ShoppingFeed format](https://github.com/shoppingflux/feed-xml). But the library also allows you to : 
+- either choose a different format (for now we only support CSV, on top of the default XML)
+- either write your own FormatWriter, by extending the ProductFeedWriterInterface
 
 ### Requirements
 
