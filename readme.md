@@ -208,8 +208,8 @@ $generator->addMapper(function(array $item, Product\Product $product) {
         ->setReference($item['sku'])
         ->setPrice($item['price'])
         ->setQuantity($item['quantity'])
-		->setAttribute('custom1', $item['custom1'])
-		->setAttribute('custom2', $item['custom2']);
+	->setAttribute('custom1', $item['custom1'])
+	->setAttribute('custom2', $item['custom2']);
 });
 
 # Data set fixtures
@@ -347,8 +347,8 @@ $generator->addMapper(function(array $item, Product\Product $product) {
             ->setReference($item['sku'])
             ->setPrice($item['price'])
             ->setQuantity($item['quantity'])
-            ->setAttribute('custom1', $item['custom1'])
-		    ->setAttribute('custom2', $item['custom2']);
+	    ->setAttribute('custom1', $item['custom1'])
+	    ->setAttribute('custom2', $item['custom2']);
     }
 });
 ```
