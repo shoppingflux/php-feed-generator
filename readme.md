@@ -184,18 +184,16 @@ That's all ! Put this code in a script then run it, XML should appear to your ou
 If the number of items / products is sufficiently large to cause a memory issues, you can always use [a generator](https://www.php.net/manual/en/language.generators.overview.php).
 
 ```php
-function getProducts(): iterable
+function getLotsOfProducts(): iterable
 {
-    $items[0] = ['sku' => 1, 'title' => 'Product 1', 'price' => 5.99, 'quantity' => 3];
-    $items[1] = ['sku' => 2, 'title' => 'Product 2', 'price' => 12.99, 'quantity' => 6];
-    // and so on ... 
-    
-    foreach($items as $item) {
-        yield $item;
+    while($batchOfProducts = getNextTenProductsFromTheDatabse()) {
+        foreach ($batchOfProducts as $product) {
+            yield $product;
+        }
     }
 }
 
-$generator->write(getProducts());
+$generator->write(getLotsOfProducts());
 ```
 
 ## Data Processing pipeline
