@@ -221,6 +221,20 @@ $generator->write($items);
 ```
 That's all ! Put this code in a script then run it, XML should appear to your output (browser or terminal).
 
+If the number of items / products is sufficiently large to cause a memory issues, you can always use [a generator](https://www.php.net/manual/en/language.generators.overview.php).
+
+```php
+function getLotsOfProducts(): iterable
+{
+    while($batchOfProducts = getNextTenProductsFromTheDatabse()) {
+        foreach ($batchOfProducts as $product) {
+            yield $product;
+        }
+    }
+}
+
+$generator->write(getLotsOfProducts());
+```
 
 ## Data Processing pipeline
 
