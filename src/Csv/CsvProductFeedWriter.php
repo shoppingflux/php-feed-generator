@@ -74,8 +74,8 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
 
         $this->dataFile->fputcsv($this->headers);
 
-        foreach ($this->tempFile as $current) {
-            if (! $current = unserialize($current)) {
+        while ($current = $this->tempFile->fgetcsv()) {
+            if (! $current = unserialize($current[0])) {
                 continue;
             }
 
@@ -190,6 +190,6 @@ class CsvProductFeedWriter implements Feed\ProductFeedWriterInterface
             sort($this->headers, SORT_NATURAL);
         }
 
-        $this->tempFile->fwrite(serialize($elements) . PHP_EOL);
+        $this->tempFile->fputcsv([ serialize($elements) ]);
     }
 }
