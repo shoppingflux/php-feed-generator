@@ -75,6 +75,18 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
         $this->writeElement('name', $product->getName());
         $this->writeSharedProduct($product);
 
+        if ($ecotax = $product->getEcotax()) {
+            $this->writeElement('ecotax', $ecotax);
+        }
+
+        if ($vat = $product->getVat()) {
+            $this->writeElement('vat', $vat);
+        }
+
+        if ($weight = $product->getWeight()) {
+            $this->writeElement('weight', $weight);
+        }
+
         if ($product->hasDescription()) {
             $description = $product->getDescription();
             $writer->startElement('description');
