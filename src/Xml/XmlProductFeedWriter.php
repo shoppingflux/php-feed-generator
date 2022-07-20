@@ -36,6 +36,11 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
         $writer = $this->writer;
         $writer->endElement(); // products
 
+        $writer->startElement('metadata');
+        $writer->writeElement('platform', $metadata->getPlatform());
+        $writer->writeElement('agent', $metadata->getAgent());
+        $writer->endElement();
+
         $writer->endElement(); // catalog
         $writer->flush();
 
