@@ -94,6 +94,8 @@ class ProductFeedMetadata
     }
 
     /**
+     * @deprecated No longer used. Will be dropped in a future version.
+     *
      * @return \DateTimeInterface
      */
     public function getStartedAt()
@@ -102,6 +104,8 @@ class ProductFeedMetadata
     }
 
     /**
+     * @deprecated No longer used. Will be dropped in a future version.
+     *
      * @param \DateTimeInterface $startedAt
      */
     public function setStartedAt(\DateTimeInterface $startedAt)
@@ -110,6 +114,8 @@ class ProductFeedMetadata
     }
 
     /**
+     * @deprecated No longer used. Will be dropped in a future version.
+     *
      * @return \DateTimeInterface
      */
     public function getFinishedAt()
@@ -118,6 +124,8 @@ class ProductFeedMetadata
     }
 
     /**
+     * @deprecated No longer used. Will be dropped in a future version.
+     *
      * @param \DateTimeInterface $finishedAt
      */
     public function setFinishedAt(\DateTimeInterface $finishedAt)
@@ -149,6 +157,8 @@ class ProductFeedMetadata
     }
 
     /**
+     * @deprecated No longer used. Will be dropped in a future version.
+     *
      * @return int
      */
     public function getFilteredCount()
@@ -157,6 +167,8 @@ class ProductFeedMetadata
     }
 
     /**
+     * @deprecated No longer used. Will be dropped in a future version.
+     *
      * @return int
      */
     public function getWrittenCount()
@@ -165,6 +177,8 @@ class ProductFeedMetadata
     }
 
     /**
+     * @deprecated No longer used. Will be dropped in a future version.
+     *
      * @return int
      */
     public function getInvalidCount()
