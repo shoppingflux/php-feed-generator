@@ -129,6 +129,10 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
         $this->writeElement('reference', $product->getReference());
         $this->writeElement('quantity', $product->getQuantity());
         $this->writeElement('price', $product->getPrice());
+
+        if ($ecotax = $product->getEcotax()) {
+            $this->writeElement('ecotax', $ecotax);
+        }
         if ($link = $product->getLink()) {
             $this->writeCdataElement('link', $link);
         }

@@ -54,6 +54,11 @@ abstract class AbstractProduct
     private $additionalImages = [];
 
     /**
+     * @var float
+     */
+    private $ecotax = .0;
+
+    /**
      * @return string
      */
     public function getReference()
@@ -334,5 +339,25 @@ abstract class AbstractProduct
     public function isValid()
     {
         return $this->reference && isset($this->price);
+    }
+
+    /**
+     * @return float
+     */
+    public function getEcotax()
+    {
+        return $this->ecotax;
+    }
+
+    /**
+     * @param float $ecotax
+     *
+     * @return $this
+     */
+    public function setEcotax($ecotax)
+    {
+        $this->ecotax = \ShoppingFeed\Feed\price_format($ecotax);
+
+        return $this;
     }
 }
