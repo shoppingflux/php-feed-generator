@@ -39,11 +39,7 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
         $writer->startElement('metadata');
         $writer->writeElement('platform', $metadata->getPlatform());
         $writer->writeElement('agent', $metadata->getAgent());
-        $writer->writeElement('startedAt', $metadata->getStartedAt()->format('c'));
-        $writer->writeElement('finishedAt', $metadata->getFinishedAt()->format('c'));
-        $writer->writeElement('invalid', $metadata->getInvalidCount());
-        $writer->writeElement('ignored', $metadata->getFilteredCount());
-        $writer->writeElement('written', $metadata->getWrittenCount());
+        $writer->writeElement('module', $metadata->getModule());
         $writer->endElement();
 
         $writer->endElement(); // catalog
@@ -74,6 +70,18 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
 
         $this->writeElement('name', $product->getName());
         $this->writeSharedProduct($product);
+
+        if ($ecotax = $product->getEcotax()) {
+            $this->writeElement('ecotax', $ecotax);
+        }
+
+        if ($vat = $product->getVat()) {
+            $this->writeElement('vat', $vat);
+        }
+
+        if ($weight = $product->getWeight()) {
+            $this->writeElement('weight', $weight);
+        }
 
         if ($product->hasDescription()) {
             $description = $product->getDescription();

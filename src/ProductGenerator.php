@@ -291,4 +291,12 @@ class ProductGenerator
 
         return new $writerClass();
     }
+
+    /**
+     * @return ProductFeedMetadata
+     */
+    public function getMetaData()
+    {
+        return $this->metadata;
+    }
 }

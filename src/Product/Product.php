@@ -33,6 +33,21 @@ final class Product extends AbstractProduct
      */
     private $variationPrototype;
 
+    /**
+     * @var float
+     */
+    private $ecotax = .0;
+
+    /**
+     * @var float
+     */
+    private $vat = .0;
+
+    /**
+     * @var float
+     */
+    private $weight = .0;
+
     public function __construct()
     {
         $this->variationPrototype = new ProductVariation();
@@ -198,4 +213,64 @@ final class Product extends AbstractProduct
 
         return false;
     }
+    /**
+     * @return float
+     */
+    public function getEcotax()
+    {
+        return $this->ecotax;
+    }
+
+    /**
+     * @param float $ecotax
+     *
+     * @return $this
+     */
+    public function setEcotax($ecotax)
+    {
+        $this->ecotax = \ShoppingFeed\Feed\price_format($ecotax);
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getVat()
+    {
+        return $this->vat;
+    }
+
+    /**
+     * @param float $vat
+     *
+     * @return $this
+     */
+    public function setVat($vat)
+    {
+        $this->vat = $vat;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getWeight()
+    {
+        return (float) $this->weight;
+    }
+
+    /**
+     * @param float $weight
+     *
+     * @return $this
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = (float) $weight;
+
+        return $this;
+    }
+
 }
