@@ -230,6 +230,6 @@ class XmlProductFeedWriter implements Feed\ProductFeedWriterInterface
             $content = Feed\xml_utf8_clean($content);
         }
 
-        return $this->writer->writeElement(trim($name), trim($content));
+        return $this->writer->writeElement(trim($name), trim((string) $content));
     }
 }
