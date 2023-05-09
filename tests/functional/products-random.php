@@ -32,6 +32,8 @@ $feed->addMapper(function(array $data, Product $product) {
         ->setReference($data['sku'])
         ->setGtin($data['ean'])
         ->setName($data['name'])
+        ->setWeight(10)
+        ->setEcotax(5)
         ->setQuantity($data['quantity'])
         ->setPrice($data['price'])
         ->setLink($data['link'])
@@ -56,6 +58,7 @@ $feed->addMapper(function(array $data, Product $product) {
             ->setReference($item['sku'])
             ->setPrice($item['price'])
             ->setQuantity($item['quantity'])
+            ->setWeight(10)
             ->setMainImage($data['image_main'])
        ;
    }
@@ -79,11 +82,13 @@ $generator = function($productCount, $variationCount) {
             $variations[] = [
                 'sku'       => $faker->ean13,
                 'price'     => $faker->randomFloat(2, 0, 200),
-                'quantity'  => $faker->numberBetween(0, 100)
+                'quantity'  => $faker->numberBetween(0, 100),
+                'weight'    => $faker->randomFloat(1, 1, 100)
             ];
         }
         yield [
             'name'              => $faker->name,
+            'ecotax'            => $faker->randomFloat(1, 1, 10),
             'sku'               => $faker->ean13,
             'ean'               => $faker->ean13,
             'link'              => $faker->url,
@@ -99,6 +104,7 @@ $generator = function($productCount, $variationCount) {
             'image_main'        => $faker->imageUrl(),
             'image1'            => $faker->imageUrl(),
             'image2'            => $faker->imageUrl(),
+            'weight'            => $faker->randomFloat(1, 1, 100),
             'variations'        => $variations
         ];
     }

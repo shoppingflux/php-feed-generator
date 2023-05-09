@@ -43,11 +43,6 @@ final class Product extends AbstractProduct
      */
     private $vat = .0;
 
-    /**
-     * @var float
-     */
-    private $weight = .0;
-
     public function __construct()
     {
         $this->variationPrototype = new ProductVariation();
@@ -252,25 +247,4 @@ final class Product extends AbstractProduct
 
         return $this;
     }
-
-    /**
-     * @return float
-     */
-    public function getWeight()
-    {
-        return (float) $this->weight;
-    }
-
-    /**
-     * @param float $weight
-     *
-     * @return $this
-     */
-    public function setWeight($weight)
-    {
-        $this->weight = (float) $weight;
-
-        return $this;
-    }
-
 }

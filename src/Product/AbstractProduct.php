@@ -54,6 +54,11 @@ abstract class AbstractProduct
     private $additionalImages = [];
 
     /**
+     * @var float
+     */
+    private $weight = .0;
+
+    /**
      * @return string
      */
     public function getReference()
@@ -334,5 +339,25 @@ abstract class AbstractProduct
     public function isValid()
     {
         return $this->reference && isset($this->price);
+    }
+
+    /**
+     * @return float
+     */
+    public function getWeight()
+    {
+        return (float) $this->weight;
+    }
+
+    /**
+     * @param float $weight
+     *
+     * @return $this
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = (float) $weight;
+
+        return $this;
     }
 }
