@@ -32,15 +32,13 @@ $feed->addMapper(function(array $data, Product $product) {
         ->setReference($data['sku'])
         ->setGtin($data['ean'])
         ->setName($data['name'])
-        ->setWeight(10)
-        ->setEcotax(5)
         ->setQuantity($data['quantity'])
         ->setPrice($data['price'])
         ->setLink($data['link'])
         ->setDescription($data['description_full'], $data['description_short'])
         ->setBrand($data['brand_name'], $data['brand_link'])
         ->setCategory($data['category_name'], $data['category_link'])
-        ->addDiscount($data['old_price'])
+        ->addDiscount($data['old_price'], $data['discount_start_datetime'], $data['discount_end_datetime'])
         ->addShipping($data['shipping_cost'], $data['shipping_time'])
         ->setAttributes(['color' => 'value1', 'material' => 'metal'])
         ->setMainImage($data['image_main'])
@@ -58,7 +56,6 @@ $feed->addMapper(function(array $data, Product $product) {
             ->setReference($item['sku'])
             ->setPrice($item['price'])
             ->setQuantity($item['quantity'])
-            ->setWeight(10)
             ->setMainImage($data['image_main'])
        ;
    }
@@ -87,25 +84,27 @@ $generator = function($productCount, $variationCount) {
             ];
         }
         yield [
-            'name'              => $faker->name,
-            'ecotax'            => $faker->randomFloat(1, 1, 10),
-            'sku'               => $faker->ean13,
-            'ean'               => $faker->ean13,
-            'link'              => $faker->url,
-            'quantity'          => $faker->numberBetween(0, 100),
-            'price'             => $faker->randomFloat(2, 0, 200),
-            'old_price'         => $faker->randomFloat(2, 0, 200),
-            'description_short' => $faker->text(30),
-            'description_full'  => $faker->paragraph(),
-            'brand_name'        => $faker->company,
-            'brand_link'        => $faker->url,
-            'category_name'     => $faker->company,
-            'category_link'     => $faker->url,
-            'image_main'        => $faker->imageUrl(),
-            'image1'            => $faker->imageUrl(),
-            'image2'            => $faker->imageUrl(),
-            'weight'            => $faker->randomFloat(1, 1, 100),
-            'variations'        => $variations
+            'name'                    => $faker->name,
+            'ecotax'                  => $faker->randomFloat(1, 1, 10),
+            'sku'                     => $faker->ean13,
+            'ean'                     => $faker->ean13,
+            'link'                    => $faker->url,
+            'quantity'                => $faker->numberBetween(0, 100),
+            'price'                   => $faker->randomFloat(2, 0, 200),
+            'discount_start_datetime' => $faker->date(),
+            'discount_end_datetime'   => $faker->date(),
+            'old_price'               => $faker->randomFloat(2, 0, 200),
+            'description_short'       => $faker->text(30),
+            'description_full'        => $faker->paragraph(),
+            'brand_name'              => $faker->company,
+            'brand_link'              => $faker->url,
+            'category_name'           => $faker->company,
+            'category_link'           => $faker->url,
+            'image_main'              => $faker->imageUrl(),
+            'image1'                  => $faker->imageUrl(),
+            'image2'                  => $faker->imageUrl(),
+            'weight'                  => $faker->randomFloat(1, 1, 100),
+            'variations'              => $variations
         ];
     }
 };
@@ -116,3 +115,4 @@ $feed->write(
         isset($argv[3]) ? $argv[3] : 0
     )
 );
+

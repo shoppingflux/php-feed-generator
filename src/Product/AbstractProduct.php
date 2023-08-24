@@ -169,12 +169,14 @@ abstract class AbstractProduct
 
     /**
      * @param float $value
+     * @param string $startDateTime
+     * @param string $endDateTime
      *
      * @return $this
      */
-    public function addDiscount($value)
+    public function addDiscount($value, $startDateTime = '', $endDateTime = '')
     {
-        $this->discounts[] = new ProductDiscount($value);
+        $this->discounts[] = new ProductDiscount($value, $startDateTime, $endDateTime);
 
         return $this;
     }
