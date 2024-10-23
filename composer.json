@@ -4,7 +4,8 @@
   "description": "ShoppingFeed Feed manager",
   "require": {
     "php": ">=5.5",
-    "ext-xml": "*"
+    "ext-xml": "*",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
