@@ -95,7 +95,7 @@ $generator = function($productCount, $variationCount) {
             'discount_end_datetime'   => $faker->date(),
             'old_price'               => $faker->randomFloat(2, 0, 200),
             'description_short'       => $faker->text(30),
-            'description_full'        => $faker->paragraph(),
+            'description_full'        => $faker->paragraphs($faker->numberBetween(1, 3), true),
             'brand_name'              => $faker->company,
             'brand_link'              => $faker->url,
             'category_name'           => $faker->company,
@@ -115,4 +115,3 @@ $feed->write(
         isset($argv[3]) ? $argv[3] : 0
     )
 );
-
